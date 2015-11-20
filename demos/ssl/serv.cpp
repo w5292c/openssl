@@ -36,26 +36,26 @@
 #define CHK_ERR(err,s) if ((err)==-1) { perror(s); exit(1); }
 #define CHK_SSL(err) if ((err)==-1) { ERR_print_errors_fp(stderr); exit(2); }
 
-void main ()
+int main ()
 {
   int err;
   int listen_sd;
   int sd;
   struct sockaddr_in sa_serv;
   struct sockaddr_in sa_cli;
-  size_t client_len;
+  socklen_t client_len;
   SSL_CTX* ctx;
   SSL*     ssl;
   X509*    client_cert;
   char*    str;
   char     buf [4096];
-  SSL_METHOD *meth;
+  const SSL_METHOD *meth;
   
   /* SSL preliminaries. We keep the certificate and key with the context. */
 
   SSL_load_error_strings();
   OpenSSL_add_ssl_algorithms();
-  meth = TLS_server_method();
+  meth = TLSv1_method();
   ctx = SSL_CTX_new (meth);
   if (!ctx) {
     ERR_print_errors_fp(stderr);
@@ -148,5 +148,6 @@ void main ()
   close (sd);
   SSL_free (ssl);
   SSL_CTX_free (ctx);
+  return 0;
 }
 /* EOF - serv.cpp */

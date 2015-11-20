@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <memory.h>
 #include <errno.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -25,7 +26,7 @@
 #define CHK_ERR(err,s) if ((err)==-1) { perror(s); exit(1); }
 #define CHK_SSL(err) if ((err)==-1) { ERR_print_errors_fp(stderr); exit(2); }
 
-void main ()
+int main ()
 {
   int err;
   int sd;
@@ -35,10 +36,10 @@ void main ()
   X509*    server_cert;
   char*    str;
   char     buf [4096];
-  SSL_METHOD *meth;
+  const SSL_METHOD *meth;
 
   OpenSSL_add_ssl_algorithms();
-  meth = TLS_client_method();
+  meth = TLSv1_method();
   SSL_load_error_strings();
   ctx = SSL_CTX_new (meth);                        CHK_NULL(ctx);
 
@@ -104,5 +105,6 @@ void main ()
   close (sd);
   SSL_free (ssl);
   SSL_CTX_free (ctx);
+  return 0;
 }
 /* EOF - cli.cpp */
